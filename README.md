@@ -2,6 +2,13 @@
 
 SwiftUIで作成したシンプルなTodoアプリです。
 
+## Screenshot
+<p align="center">
+  <img src="todolist01.png" width="250">
+  <img src="todolist02.png" width="250">
+  <img src="todolist03.png" width="250">
+</p>
+
 ## Features
 - Todo追加
 - Todo削除
@@ -12,9 +19,4 @@ SwiftUIで作成したシンプルなTodoアプリです。
 - Swift
 - SwiftUI
 
-## Screenshot
-<p align="center">
-  <img src="todolist01.png" width="250">
-  <img src="todolist02.png" width="250">
-  <img src="todolist03.png" width="250">
-</p>
+
