@@ -8,13 +8,25 @@
 import SwiftUI
 
 struct TodoRowView: View {
-    var todo: Todo
+    
+    @ObservedObject var task: TaskEntity
+    var viewModel: TodoViewModel
     
     var body: some View {
         HStack {
-            Image(systemName:  todo.isCompleted ? "checkmark.circle.fill" : "circle")
-            Text(todo.title)
+            Button {
+                viewModel.toggleComplete(task)
+            } label: {
+                Image(systemName: task.isCompleted ? "checkmark.circle.fill" : "circle")
+            }
+            .buttonStyle(.plain) // 重要（Listの挙動対策）
+            
+            Text(task.title ?? "")
+                .strikethrough(task.isCompleted)
+            
+            Spacer()
         }
+        .padding(.vertical, 4)
     }
 }
 

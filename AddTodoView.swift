@@ -24,7 +24,7 @@ struct AddTodoView: View {
             },
                                 trailing: Button("追加") {
                 if !title.isEmpty {
-                    viewModel.addTodo(title: title)
+                    viewModel.addTask(title: title)
                     presentationMode.wrappedValue.dismiss()
                 }
             }

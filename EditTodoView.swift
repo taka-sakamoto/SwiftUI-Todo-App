@@ -9,30 +9,24 @@ import SwiftUI
 
 struct EditTodoView: View {
     
-    @Environment(\.dismiss) var dismiss
-    
+    var item: TaskEntity
     var viewModel: TodoViewModel
-    var todo: Todo
     
-    @State private var title: String
-    
-    init(viewmodel: TodoViewModel, todo: Todo) {
-        self.viewModel = viewmodel
-        self.todo = todo
-        _title = State(initialValue: todo.title)
-    }
-    
+    @State private var title: String = ""
+
     var body: some View {
-        NavigationView {
-            Form {
-                TextField("タイトル", text: $title)
+        VStack {
+            TextField("タスク名", text: $title)
+                .textFieldStyle(.roundedBorder)
+                .padding()
+            
+            Button("保存") {
+                item.title = title
+                viewModel.saveContext()
             }
-            .navigationTitle("Todo編集")
-            .navigationBarItems(trailing: Button("保存") {
-                viewModel.updateToDo(todo: todo, newTitle: title)
-                dismiss()
-            }
-          )
+        }
+        .onAppear {
+            title = item.title ?? ""
         }
     }
 }

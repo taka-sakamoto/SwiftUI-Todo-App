@@ -10,36 +10,38 @@ import SwiftUI
 struct TodoListView: View {
     
     @StateObject var viewModel = TodoViewModel()
-    // @ObservedObject var viewModel: TodoViewModel
     @State private var showingAddTodo = false
-    @State private var selectedTodo: Todo?
     
     var body: some View {
         
         NavigationView {
             List {
-                ForEach(viewModel.todos) { todo in
-                    TodoRowView(todo: todo)
-                        .onTapGesture {
-                            viewModel.toggle(todo: todo)
-                        }
+                ForEach(viewModel.tasks) { task in
+                    TodoRowView(task: task, viewModel: viewModel)
+                }
+                .onDelete { IndexSet in
+                    for index in IndexSet {
+                        let task = viewModel.tasks[index]
+                        viewModel.deleteTask(task)
                     }
-               
-                .onDelete(perform: viewModel.delete)
+                }
             }
             .navigationTitle("Todo")
             
-            .navigationBarItems(trailing: Button(action: {
-                showingAddTodo = true
-                }) {
-                    Image(systemName: "plus")
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        showingAddTodo = true
+                    } label: {
+                        Image(systemName: "plus")
+                    }
                 }
-            )
+            }
+        
             .sheet(isPresented: $showingAddTodo) {
                 AddTodoView(viewModel: viewModel)
             }
         }
-       
     }
 }
 

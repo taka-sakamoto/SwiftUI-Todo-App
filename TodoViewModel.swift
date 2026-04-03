@@ -6,57 +6,63 @@
 //
 
 import SwiftUI
-import Foundation
 import Combine
+import CoreData
 
 class TodoViewModel: ObservableObject {
     
-    @Published var todos: [Todo] = []
+    @Published var tasks: [TaskEntity] = []
     
-    private let saveKey = "todos"
+    private let context = PersistenceController.shared.container.viewContext
     
     init() {
-        // 後でUserDefaultsなどから読み込むことも可能
-        loadTodos()
+        fetchTasks()
     }
     
-    func addTodo(title: String) {
-        let todo = Todo(id: UUID(), title: title, isCompleted: false)
-        todos.append(todo)
-        saveTodos()
-    }
+    func fetchTasks() {
+        let request: NSFetchRequest<TaskEntity> = TaskEntity.fetchRequest()
     
-    func toggle(todo: Todo) {
-        if let index = todos.firstIndex(where: { $0.id == todo.id }) {
-            todos[index].isCompleted.toggle()
-            saveTodos()
+        do {
+            tasks = try context.fetch(request)
+        } catch {
+            print("取得エラー: \(error)")
         }
     }
     
-    func delete(at offsets: IndexSet) {
-        todos.remove(atOffsets: offsets)
-        saveTodos()
+    // 追加
+    func addTask(title: String) {
+        let task = TaskEntity(context: context)
+        task.id = UUID()
+        task.title = title
+        task.isCompleted = false
+        
+        saveContext()
+        fetchTasks()
     }
     
-    func saveTodos() {
-        if let encoded = try? JSONEncoder().encode(todos) {
-            UserDefaults.standard.set(encoded, forKey: saveKey)
+    // 削除
+    func deleteTask(_ task: TaskEntity) {
+        context.delete(task)
+        saveContext()
+        fetchTasks()
+    }
+    
+    // 完了切り替え
+    func toggleComplete(_ task: TaskEntity) {
+        task.isCompleted.toggle()
+        saveContext()
+       
+    }
+    
+    // 保存
+    func saveContext() {
+        do {
+            try context.save()
+        } catch {
+            print("保存エラー : \(error)")
         }
     }
     
-    func loadTodos() {
-        if let data = UserDefaults.standard.data(forKey: saveKey),
-           let decoded = try? JSONDecoder().decode([Todo].self, from: data) {
-            todos = decoded
-        }
-    }
-    
-    func updateToDo(todo: Todo, newTitle: String) {
-        if let index = todos.firstIndex(where: { $0.id == todo.id }) {
-            todos[index].title = newTitle
-            saveTodos()
-        }
-    }
 }
 
 
